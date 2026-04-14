@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import history from 'connect-history-api-fallback';
+import merge from 'lodash/merge';
 import { getConfig } from '../config';
 import { ShieldConfig } from '../models/Config';
 import { log } from './log';
@@ -20,7 +21,23 @@ export function defaultMiddlewares(conf?: Partial<ShieldConfig>): RequestHandler
 
   middlewares.push(log(config));
 
-  middlewares.push(helmet(config.helmetOption) as unknown as RequestHandler);
+  if (config.cors) {
+    middlewares.push(cors(config.corsOption));
+  }
+
+  const helmetOptions = config.cors
+    ? merge(
+        {},
+        {
+          crossOriginResourcePolicy: { policy: 'cross-origin' },
+          crossOriginOpenerPolicy: false,
+          crossOriginEmbedderPolicy: false,
+        },
+        config.helmetOption,
+      )
+    : config.helmetOption;
+
+  middlewares.push(helmet(helmetOptions) as unknown as RequestHandler);
 
   middlewares.push(cookieParser());
 
@@ -32,10 +49,6 @@ export function defaultMiddlewares(conf?: Partial<ShieldConfig>): RequestHandler
 
   if (config.compression) {
     middlewares.push(compression());
-  }
-
-  if (config.cors) {
-    middlewares.push(cors(config.corsOption));
   }
 
   if (config.rewrite && config.rewrite.length > 0) {
