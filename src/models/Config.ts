@@ -28,6 +28,8 @@ export interface SplunkOption {
   sourceType?: string;
   sourceHost?: string;
   httpRequest?: boolean;
+  /** Set to false only for dev/self-signed certs. Defaults to true. */
+  tlsRejectUnauthorized?: boolean;
 }
 
 export interface ShieldConfig {

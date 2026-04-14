@@ -37,7 +37,7 @@ function sendToSplunkHEC(splunk: SplunkOption, event: Record<string, any>): void
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload),
       },
-      ...(isHttps ? { rejectUnauthorized: false } : {}),
+      ...(isHttps ? { rejectUnauthorized: splunk.tlsRejectUnauthorized ?? true } : {}),
     };
 
     const req = transport.request(options);

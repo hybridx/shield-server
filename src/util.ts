@@ -1,6 +1,19 @@
 import { Request } from 'express';
 
+/**
+ * Resolves the client IP address from the request.
+ *
+ * When Express `trust proxy` is configured, prefers `req.ip` which Express
+ * derives from the trusted proxy chain. Otherwise falls back to header
+ * inspection in priority order: True-Client-IP, X-Real-IP, X-Forwarded-For.
+ */
 export function getIP(req: Request): string {
+  const trustProxy = req.app?.get('trust proxy');
+
+  if (trustProxy && req.ip) {
+    return req.ip;
+  }
+
   const trueClientIp = req.headers['true-client-ip'];
   if (trueClientIp && typeof trueClientIp === 'string') return trueClientIp;
 

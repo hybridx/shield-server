@@ -17,7 +17,7 @@ Express middlewares bundle to bootstrap a backend project in minutes.
 ## Installation
 
 ```shell
-npm install @cplabs/shield-server
+npm install shield-server
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ npm install @cplabs/shield-server
 
 ```typescript
 import express from 'express';
-import { defaultMiddlewares, defaultErrorHandlers, logger } from '@cplabs/shield-server';
+import { defaultMiddlewares, defaultErrorHandlers, logger } from 'shield-server';
 
 const app = express();
 

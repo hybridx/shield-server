@@ -6,6 +6,7 @@ import '../models/Response';
 
 export function defaultErrorHandlers(conf?: Partial<ShieldConfig>): ErrorRequestHandler[] {
   const config = getConfig(conf);
+  const isProduction = process.env.NODE_ENV === 'production';
 
   const errorHandler: ErrorRequestHandler = (
     err: any,
@@ -13,17 +14,20 @@ export function defaultErrorHandlers(conf?: Partial<ShieldConfig>): ErrorRequest
     res: Response,
     next: NextFunction,
   ) => {
-    const errorMessage = err?.stack || err?.message || String(err);
-    logger.error(errorMessage);
+    const fullError = err?.stack || err?.message || String(err);
+    logger.error(fullError);
+
+    const clientMessage =
+      isProduction && !config.debug ? 'Internal Server Error' : fullError;
 
     if (config.mode === 'api') {
       if (!res.headersSent) {
         res.status(500);
-        res.error(errorMessage);
+        res.error(clientMessage);
       }
     } else {
       if (!res.headersSent) {
-        res.status(500).end(errorMessage + '\n');
+        res.status(500).end(clientMessage + '\n');
       }
     }
 
