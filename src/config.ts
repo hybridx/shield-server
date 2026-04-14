@@ -1,3 +1,4 @@
+import path from 'path';
 import { cosmiconfigSync } from 'cosmiconfig';
 import merge from 'lodash/merge';
 import { ShieldConfig } from './models/Config';
@@ -21,8 +22,28 @@ const defaultConfig: ShieldConfig = {
 function loadRcConfig(): Partial<ShieldConfig> {
   try {
     const explorer = cosmiconfigSync('shield');
+
+    // Search from CWD (standard cosmiconfig behavior)
     const result = explorer.search();
-    return result?.config ?? {};
+    if (result?.config) return result.config;
+
+    // In monorepos, CWD is the workspace root, not the app directory.
+    // Also search from the directory of the main entry module.
+    if (require.main?.filename) {
+      const mainDir = path.dirname(require.main.filename);
+      if (mainDir !== process.cwd()) {
+        const mainResult = explorer.search(mainDir);
+        if (mainResult?.config) return mainResult.config;
+      }
+    }
+
+    // Search from SHIELD_CONFIG_PATH if set
+    if (process.env.SHIELD_CONFIG_PATH) {
+      const loaded = explorer.load(process.env.SHIELD_CONFIG_PATH);
+      if (loaded?.config) return loaded.config;
+    }
+
+    return {};
   } catch {
     return {};
   }
