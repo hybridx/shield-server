@@ -10,21 +10,22 @@ export function responseWrapper(): RequestHandler {
       });
     };
 
-    res.fail = (data?: any) => {
+    res.fail = (data?: any, statusCode?: number) => {
+      if (statusCode) res.status(statusCode);
       res.json({
         status: 'fail',
         data: data ?? null,
       });
     };
 
-    res.error = (message: string, data?: any, code?: number) => {
-      const body: Record<string, any> = {
-        status: 'error',
-        message,
-      };
-      if (data !== undefined) body.data = data;
-      if (code !== undefined) body.code = code;
-      res.json(body);
+    res.error = (error: any, statusCode?: number) => {
+      if (statusCode) res.status(statusCode);
+
+      if (typeof error === 'string') {
+        res.json({ status: 'error', message: error });
+      } else {
+        res.json({ status: 'error', ...error });
+      }
     };
 
     next();

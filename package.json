@@ -1,6 +1,6 @@
 {
   "name": "shield-server",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Express middlewares bundle to bootstrap a backend project in minutes",
   "bin": "./dist/bin/shield-server.js",
   "main": "./dist/index.js",
