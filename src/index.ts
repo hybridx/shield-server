@@ -21,6 +21,12 @@ export type {
   ProxyConfig,
   RewriteRule,
   SplunkOption,
+  ServerConfig,
+  SecurityConfig,
+  LoggingConfig,
+  StaticConfig,
+  RequestConfig,
+  RoutingConfig,
 } from './models/Config';
 
 import './models/Response';

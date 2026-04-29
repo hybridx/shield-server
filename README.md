@@ -1,5 +1,10 @@
 # Shield Server
 
+[![CI](https://github.com/hybridx/shield-server/actions/workflows/ci.yml/badge.svg)](https://github.com/hybridx/shield-server/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/shield-server.svg)](https://www.npmjs.com/package/shield-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/node/v/shield-server.svg)](https://nodejs.org)
+
 Express middlewares bundle to bootstrap a backend project in minutes.
 
 ## Features
@@ -88,6 +93,45 @@ Shield Server uses [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) to 
 | `rateLimitOption` | `RateLimitOptions` | — | Rate limiting options |
 | `requestBodySize` | `string` | `'100kb'` | Max JSON body size |
 | `healthCheckPath` | `string` | `'/server-health'` | Health check endpoint |
+| `healthCheckResponse` | `(req, res) => void` | — | Custom health check handler |
+
+### Custom Health Check
+
+Override the default health response to include app-specific diagnostics:
+
+```typescript
+app.use(defaultMiddlewares({
+  healthCheckResponse: (_req, res) => {
+    res.json({
+      status: 'ok',
+      redis: isRedisConnected() ? 'connected' : 'disconnected',
+      uptime: process.uptime(),
+    });
+  },
+}));
+```
+
+### Typed Sub-Interfaces
+
+`ShieldConfig` is composed from focused sub-interfaces following the Interface Segregation Principle. Import only what you need:
+
+| Interface | Properties |
+|-----------|------------|
+| `ServerConfig` | `name`, `mode`, `port`, `debug` |
+| `SecurityConfig` | `cors`, `corsOption`, `ssl`, `helmetOption` |
+| `LoggingConfig` | `splunk`, `morganFormat`, `morganSkip`, `loggerLevel` |
+| `StaticConfig` | `staticDir`, `publicPath`, `historyApiFallback` |
+| `RequestConfig` | `compression`, `requestBodySize`, `rateLimitOption` |
+| `RoutingConfig` | `proxies`, `rewrite`, `healthCheckPath`, `healthCheckResponse` |
+
+```typescript
+import type { RoutingConfig } from 'shield-server';
+
+const routing: RoutingConfig = {
+  healthCheckPath: '/ping',
+  healthCheckResponse: (_req, res) => res.json({ ok: true }),
+};
+```
 
 ### Environment Variables
 

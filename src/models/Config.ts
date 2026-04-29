@@ -32,26 +32,50 @@ export interface SplunkOption {
   tlsRejectUnauthorized?: boolean;
 }
 
-export interface ShieldConfig {
+export interface ServerConfig {
   name?: string;
   mode?: ShieldMode;
   port?: number;
   debug?: boolean;
-  compression?: boolean;
+}
+
+export interface SecurityConfig {
   cors?: boolean;
   corsOption?: CorsOptions;
   ssl?: SSLConfig;
-  staticDir?: string;
-  publicPath?: string;
-  proxies?: ProxyConfig[];
-  rewrite?: RewriteRule[];
-  historyApiFallback?: boolean;
   helmetOption?: HelmetOptions;
+}
+
+export interface LoggingConfig {
   splunk?: SplunkOption;
   morganFormat?: string;
   morganSkip?: string | ((req: any, res: any) => boolean);
   loggerLevel?: LoggerLevel;
-  rateLimitOption?: Partial<RateLimitOptions>;
-  requestBodySize?: string;
-  healthCheckPath?: string;
 }
+
+export interface StaticConfig {
+  staticDir?: string;
+  publicPath?: string;
+  historyApiFallback?: boolean;
+}
+
+export interface RequestConfig {
+  compression?: boolean;
+  requestBodySize?: string;
+  rateLimitOption?: Partial<RateLimitOptions>;
+}
+
+export interface RoutingConfig {
+  proxies?: ProxyConfig[];
+  rewrite?: RewriteRule[];
+  healthCheckPath?: string;
+  healthCheckResponse?: (req: any, res: any) => void;
+}
+
+export interface ShieldConfig
+  extends ServerConfig,
+    SecurityConfig,
+    LoggingConfig,
+    StaticConfig,
+    RequestConfig,
+    RoutingConfig {}
